@@ -4,27 +4,27 @@ repos:
     hooks:
       - id: system
         name: Black
-        entry: poetry run black myproject
+        entry: poetry run black steth_price_balancer
         pass_filenames: false
         language: system
   - repo: local
     hooks:
       - id: system
         name: isort
-        entry: poetry run isort myproject
+        entry: poetry run isort steth_price_balancer
         pass_filenames: false
         language: system
   - repo: local
     hooks:
       - id: system
         name: MyPy
-        entry: poetry run mypy myproject
+        entry: poetry run mypy steth_price_balancer
         pass_filenames: false
         language: system
   - repo: local
     hooks:
       - id: system
         name: Pylint
-        entry: poetry run pylint -j 0 myproject
+        entry: poetry run pylint -j 0 steth_price_balancer
         pass_filenames: false
         language: system

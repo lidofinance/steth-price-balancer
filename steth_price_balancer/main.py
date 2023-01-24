@@ -1,6 +1,7 @@
 import time
 
-from myproject.health_check import start_pulse_server
+from steth_price_balancer.health_check import start_pulse_server
+
 
 if __name__ == "__main__":
     # Enable healthcheck

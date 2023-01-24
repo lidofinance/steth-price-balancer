@@ -1,2 +1,2 @@
 def test_function():
-    """Your myproject tests"""
+    """Your steth_price_balancer tests"""

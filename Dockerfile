@@ -40,4 +40,4 @@ HEALTHCHECK --interval=10s --timeout=3s \
     CMD curl -f http://localhost:$PULSE_SERVER_PORT/healthcheck || exit 1
 
 ENTRYPOINT ["python3"]
-CMD ["-m", "myproject.main"]
+CMD ["-m", "steth_price_balancer.main"]
