@@ -13,6 +13,9 @@ include = [
 python = ">=3.11.1,<4"
 requests = "^2.27.1"
 prometheus-client = "^0.16.0"
+timeout-decorator = "^0.5.0"
+#web3-multi-provider = {"git" = "https://github.com/lidofinance/web3py-multi-http-provider"}
+web3 = "6.0.0b9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"

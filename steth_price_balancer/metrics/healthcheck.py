@@ -1,18 +1,17 @@
-import os
 import threading
 from datetime import datetime, timedelta
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-import requests  # type: ignore
+import requests
 
-SERVER_PORT = int(os.getenv("PULSE_SERVER_PORT", "9010"))
+from steth_price_balancer.variables import HEALTHCHECK_SERVER_PORT
 
 _last_pulse = datetime.now()
 
 
 def pulse():
     """Ping to healthcheck server that application is ok"""
-    requests.get(f"http://localhost:{SERVER_PORT}/pulse/")
+    requests.get(f"http://localhost:{HEALTHCHECK_SERVER_PORT}/pulse/")
 
 
 class PulseRequestHandler(SimpleHTTPRequestHandler):
@@ -46,7 +45,7 @@ def start_pulse_server():
     healthcheck in docker returns 1 and bot will be restarted
     """
     server = HTTPServer(
-        ("localhost", SERVER_PORT), RequestHandlerClass=PulseRequestHandler
+        ("localhost", HEALTHCHECK_SERVER_PORT), RequestHandlerClass=PulseRequestHandler
     )
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
