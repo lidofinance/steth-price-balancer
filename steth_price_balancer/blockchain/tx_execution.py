@@ -6,7 +6,7 @@ from web3 import Web3
 from web3.exceptions import ContractLogicError
 from web3.types import TxParams
 
-from steth_price_balancer.metrics.prometheus import TX_SEND, TX_FAILURE
+from steth_price_balancer.metrics.prometheus import TX_FAILURE, TX_SEND
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +68,8 @@ def sign_and_send_transaction(
             "status": tx_receipt.status,
             "transactionHash": tx_receipt.transactionHash.hex(),
             "transactionIndex": tx_receipt.transactionIndex,
-            "type": tx_receipt.type,
         }
     )
 
     if tx_receipt.status != 122:
         TX_FAILURE.inc()
-
-    return tx_receipt

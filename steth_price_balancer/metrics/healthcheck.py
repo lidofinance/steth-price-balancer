@@ -11,7 +11,7 @@ _last_pulse = datetime.now()
 
 def pulse():
     """Ping to healthcheck server that application is ok"""
-    requests.get(f"http://localhost:{HEALTHCHECK_SERVER_PORT}/pulse/")
+    requests.get(f"http://localhost:{HEALTHCHECK_SERVER_PORT}/pulse/", timeout=2)
 
 
 class PulseRequestHandler(SimpleHTTPRequestHandler):

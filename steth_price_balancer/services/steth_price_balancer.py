@@ -2,19 +2,20 @@ import logging
 import time
 from functools import lru_cache
 
-from timeout_decorator import timeout, TimeoutError
+from timeout_decorator import TimeoutError, timeout
 from web3 import Web3
 from web3.exceptions import BlockNotFound
 
-# from web3_multi_provider import NoActiveProviderError
-
-from steth_price_balancer import variables, constants
+from steth_price_balancer import constants, variables
 from steth_price_balancer.blockchain.contracts import contracts
 from steth_price_balancer.blockchain.tx_execution import (
     check_transaction,
     sign_and_send_transaction,
 )
 from steth_price_balancer.services.build_proof import encode_proof_data
+
+# from web3_multi_provider import NoActiveProviderError
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,20 +79,20 @@ class StethPriceBalancer:
         oracle_price = contracts.stable_swap_state_oracle.functions.stethPrice().call(
             block_identifier=block_number
         )
-        logger.info({"msg": f"Fetch steth price in oracle.", "value": oracle_price})
+        logger.info({"msg": "Fetch steth price in oracle.", "value": oracle_price})
 
         pool_price = contracts.pool.functions.get_dy(1, 0, 10**18).call(
             block_identifier=block_number
         )
-        logger.info({"msg": f"Fetch steth price in pool.", "value": pool_price})
+        logger.info({"msg": "Fetch steth price in pool.", "value": pool_price})
 
         percentage_diff = 100 * abs(1 - oracle_price / pool_price)
         logger.info(
-            {"msg": f"Calculate different percentage.", "value": percentage_diff}
+            {"msg": "Calculate different percentage.", "value": percentage_diff}
         )
 
         proof_params = self._get_proof_params(block_number)
-        logger.info({"msg": f"Fetch proof params.", "value": proof_params})
+        logger.info({"msg": "Fetch proof params.", "value": proof_params})
 
         # proof_params[-1] contains priceUpdateThreshold value in basis points: 10000 BP equal to 100%, 100 BP to 1%.
         price_update_threshold = proof_params[-1] / 100
@@ -101,6 +102,7 @@ class StethPriceBalancer:
             logging.info(
                 f"StETH Price Oracle state valid (prices difference < {price_update_threshold:.2f}%). No update required."
             )
+            self.submit_new_state(block_number)
         else:
             logging.info(
                 f"StETH Price Oracle state outdated (prices difference >= {price_update_threshold:.2f}%). Submitting new one..."
@@ -130,3 +132,4 @@ class StethPriceBalancer:
 
         if check_transaction(tx, variables.ACCOUNT.address):
             sign_and_send_transaction(self._w3, tx, variables.ACCOUNT)
+        sign_and_send_transaction(self._w3, tx, variables.ACCOUNT)

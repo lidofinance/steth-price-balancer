@@ -1,7 +1,6 @@
-import rlp
 import requests
-from eth_utils import decode_hex, to_bytes, to_int, to_hex, apply_key_map
-
+import rlp
+from eth_utils import apply_key_map, decode_hex, to_bytes, to_hex, to_int
 
 BLOCK_HEADER_FIELDS = [
     "parentHash",

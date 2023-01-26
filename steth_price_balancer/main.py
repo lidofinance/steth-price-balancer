@@ -1,17 +1,15 @@
 import logging
 
 from prometheus_client import start_http_server
-from web3 import Web3
-
-from web3 import HTTPProvider
-
-# from web3_multi_provider import MultiProvider
+from web3 import HTTPProvider, Web3
 
 from steth_price_balancer import variables
 from steth_price_balancer.blockchain.contracts import contracts
-from steth_price_balancer.metrics.healthcheck import start_pulse_server
 from steth_price_balancer.blockchain.middlewares import add_requests_metric_middleware
+from steth_price_balancer.metrics.healthcheck import start_pulse_server
 from steth_price_balancer.services.steth_price_balancer import StethPriceBalancer
+
+# from web3_multi_provider import MultiProvider
 
 
 logger = logging.getLogger(__name__)

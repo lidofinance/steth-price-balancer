@@ -11,8 +11,8 @@ class Contracts:
 
     @staticmethod
     def _load_abi(abi_path, abi_name):
-        f = open(f"{abi_path}{abi_name}.json")
-        return json.load(f)
+        with open(f"{abi_path}{abi_name}.json") as f:
+            return json.load(f)
 
     def initialize(self, w3: Web3, abi_path="./abi/"):
         self.pool = w3.eth.contract(

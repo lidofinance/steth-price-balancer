@@ -1,7 +1,6 @@
-from prometheus_client import Gauge, Histogram, Counter
+from prometheus_client import Counter, Gauge, Histogram
 
 from steth_price_balancer.variables import PROMETHEUS_PREFIX
-
 
 BUILD_INFO = Gauge(
     "build_info",
