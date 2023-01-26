@@ -6,7 +6,7 @@ from web3 import Web3
 from web3.exceptions import ContractLogicError
 from web3.types import TxParams
 
-from steth_price_balancer.metrics.prometheus import TX_FAILURE, TX_SEND
+from metrics.prometheus import TX_FAILURE, TX_SEND
 
 logger = logging.getLogger(__name__)
 

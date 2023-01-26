@@ -6,7 +6,7 @@ from requests import HTTPError, Response
 from web3 import Web3
 from web3.types import RPCEndpoint, RPCResponse
 
-from steth_price_balancer.metrics.prometheus import (
+from metrics.prometheus import (
     RPC_REQUESTS,
     RPC_REQUESTS_DURATION,
 )

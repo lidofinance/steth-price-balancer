@@ -2,7 +2,7 @@ import json
 
 from web3 import Web3
 
-from steth_price_balancer import variables
+import variables
 
 
 class Contracts:

@@ -1,6 +1,6 @@
 from prometheus_client import Counter, Gauge, Histogram
 
-from steth_price_balancer.variables import PROMETHEUS_PREFIX
+from variables import PROMETHEUS_PREFIX
 
 BUILD_INFO = Gauge(
     "build_info",
@@ -45,11 +45,5 @@ TX_SEND = Counter(
 TX_FAILURE = Counter(
     "tx_failure",
     "Tx failures.",
-    namespace=PROMETHEUS_PREFIX,
-)
-
-UNEXPECTED_BEHAVIOUR = Counter(
-    "unexpected_behaviour",
-    "Unexpected behaviour. Check logs.",
     namespace=PROMETHEUS_PREFIX,
 )

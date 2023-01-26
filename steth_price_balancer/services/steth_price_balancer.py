@@ -6,13 +6,15 @@ from timeout_decorator import TimeoutError, timeout
 from web3 import Web3
 from web3.exceptions import BlockNotFound
 
-from steth_price_balancer import constants, variables
-from steth_price_balancer.blockchain.contracts import contracts
-from steth_price_balancer.blockchain.tx_execution import (
+import constants
+import variables
+from blockchain.contracts import contracts
+from blockchain.tx_execution import (
     check_transaction,
     sign_and_send_transaction,
 )
-from steth_price_balancer.services.build_proof import encode_proof_data
+from metrics.prometheus import EXCEPTIONS_COUNT, ACCOUNT_BALANCE
+from services.build_proof import encode_proof_data
 
 # from web3_multi_provider import NoActiveProviderError
 
@@ -29,6 +31,12 @@ class StethPriceBalancer:
     def run_as_daemon(self):
         while True:
             self._cycle_handler()
+
+    def _check_balance(self) -> int:
+        balance = self._w3.eth.get_balance(variables.ACCOUNT.address)
+        logger.info({"msg": f"Fetch account ({variables.ACCOUNT.address}) balance.", "value": balance})
+        ACCOUNT_BALANCE.labels(variables.ACCOUNT.address).set(balance)
+        return balance
 
     @timeout(variables.MAX_CYCLE_LIFETIME_IN_SECONDS)
     def _cycle_handler(self):
@@ -52,9 +60,11 @@ class StethPriceBalancer:
         except ValueError as error:
             logger.error({"msg": error.args, "error": str(error)})
             time.sleep(constants.DEFAULT_SLEEP)
+            EXCEPTIONS_COUNT.inc()
         except Exception as error:
             logger.warning({"msg": "Unexpected exception.", "error": str(error)})
             time.sleep(constants.DEFAULT_SLEEP)
+            EXCEPTIONS_COUNT.inc()
         else:
             time.sleep(constants.DEFAULT_SLEEP)
 
@@ -65,10 +75,10 @@ class StethPriceBalancer:
         )
 
     def run_cycle(self):
-        block_number = (
-            self._w3.eth.get_block("latest").number
-            - variables.STETH_PRICE_ORACLE_BLOCK_NUMBER_SHIFT
-        )
+        if variables.ACCOUNT:
+            self._check_balance()
+
+        block_number = self._w3.eth.get_block("latest").number - variables.STETH_PRICE_ORACLE_BLOCK_NUMBER_SHIFT
         logger.info(
             {
                 "msg": f"Start balancer cycle for block {block_number}.",
@@ -76,23 +86,17 @@ class StethPriceBalancer:
             }
         )
 
-        oracle_price = contracts.stable_swap_state_oracle.functions.stethPrice().call(
-            block_identifier=block_number
-        )
+        oracle_price = contracts.stable_swap_state_oracle.functions.stethPrice().call(block_identifier=block_number)
         logger.info({"msg": "Fetch steth price in oracle.", "value": oracle_price})
 
-        pool_price = contracts.pool.functions.get_dy(1, 0, 10**18).call(
-            block_identifier=block_number
-        )
+        pool_price = contracts.pool.functions.get_dy(1, 0, 10**18).call(block_identifier=block_number)
         logger.info({"msg": "Fetch steth price in pool.", "value": pool_price})
 
         percentage_diff = 100 * abs(1 - oracle_price / pool_price)
-        logger.info(
-            {"msg": "Calculate different percentage.", "value": percentage_diff}
-        )
+        logger.info({"msg": "Calculate different percentage.", "value": percentage_diff})
 
         proof_params = self._get_proof_params(block_number)
-        logger.info({"msg": "Fetch proof params.", "value": proof_params})
+        logger.info({"msg": "Fetch proof params.", "value": str(proof_params)})
 
         # proof_params[-1] contains priceUpdateThreshold value in basis points: 10000 BP equal to 100%, 100 BP to 1%.
         price_update_threshold = proof_params[-1] / 100
@@ -102,7 +106,6 @@ class StethPriceBalancer:
             logging.info(
                 f"StETH Price Oracle state valid (prices difference < {price_update_threshold:.2f}%). No update required."
             )
-            self.submit_new_state(block_number)
         else:
             logging.info(
                 f"StETH Price Oracle state outdated (prices difference >= {price_update_threshold:.2f}%). Submitting new one..."
@@ -132,4 +135,3 @@ class StethPriceBalancer:
 
         if check_transaction(tx, variables.ACCOUNT.address):
             sign_and_send_transaction(self._w3, tx, variables.ACCOUNT)
-        sign_and_send_transaction(self._w3, tx, variables.ACCOUNT)

@@ -4,7 +4,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 import requests
 
-from steth_price_balancer.variables import HEALTHCHECK_SERVER_PORT
+from variables import HEALTHCHECK_SERVER_PORT
 
 _last_pulse = datetime.now()
 
