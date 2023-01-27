@@ -1,6 +1,7 @@
 
 from prometheus_client import start_http_server
-from web3 import HTTPProvider, Web3
+from web3 import Web3
+from web3_multi_provider import MultiProvider
 
 import variables
 from metrics.logging import logging
@@ -8,8 +9,6 @@ from blockchain.contracts import contracts
 from blockchain.middlewares import add_requests_metric_middleware
 from metrics.healthcheck import start_pulse_server
 from services.steth_price_balancer import StethPriceBalancer
-
-# from web3_multi_provider import MultiProvider
 
 
 logger = logging.getLogger(__name__)
@@ -46,8 +45,7 @@ if __name__ == "__main__":
     start_http_server(variables.PROMETHEUS_PORT)
 
     logger.info({"msg": "Initialize multi web3 provider."})
-    w3 = Web3(HTTPProvider(variables.WEB3_RPC_ENDPOINTS[0]))
-    # w3 = Web3(MultiProvider(variables.WEB3_RPC_ENDPOINTS))
+    w3 = Web3(MultiProvider(variables.WEB3_RPC_ENDPOINTS))
 
     logger.info({"msg": "Add metrics middleware for ETH1 requests."})
     add_requests_metric_middleware(w3)

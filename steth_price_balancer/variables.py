@@ -6,7 +6,7 @@ from eth_account import Account
 logger = logging.getLogger(__name__)
 
 
-WEB3_RPC_ENDPOINTS = os.getenv("WEB3_PROVIDER_URI", "").split(",")
+WEB3_RPC_ENDPOINTS = os.getenv("WEB3_RPC_ENDPOINTS", "").split(",")
 
 WALLET_PRIVATE_KEY = os.getenv("WALLET_PRIVATE_KEY", None)
 if WALLET_PRIVATE_KEY:

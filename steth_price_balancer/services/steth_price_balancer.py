@@ -16,7 +16,7 @@ from blockchain.tx_execution import (
 from metrics.prometheus import EXCEPTIONS_COUNT, ACCOUNT_BALANCE
 from services.build_proof import encode_proof_data
 
-# from web3_multi_provider import NoActiveProviderError
+from web3_multi_provider import NoActiveProviderError
 
 
 logger = logging.getLogger(__name__)
@@ -51,9 +51,9 @@ class StethPriceBalancer:
                 {"msg": "Price balancer do not respond.", "error": str(exception)}
             )
             raise TimeoutError("Price balancer stuck.") from exception
-        # except NoActiveProviderError as exception:
-        #     logger.error({'msg': 'No active node available.', 'error': str(exception)})
-        #     raise NoActiveProviderError from exception
+        except NoActiveProviderError as exception:
+            logger.error({'msg': 'No active node available.', 'error': str(exception)})
+            raise NoActiveProviderError from exception
         except ConnectionError as error:
             logger.error({"msg": error.args, "error": str(error)})
             raise ConnectionError from error

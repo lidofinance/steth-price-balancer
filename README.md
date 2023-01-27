@@ -35,21 +35,3 @@ python main.py
 | PROMETHEUS_PREFIX                     | `steth_price_balancer`                       | Prefix for                                                                                                                                      |
 | HEALTHCHECK_SERVER_PORT               | `9010`                                       | Port for heath-check server used by docker                                                                                                      |
 | MAX_CYCLE_LIFETIME_IN_SECONDS         | `60`                                         | Timeout for main cycle                                                                                                                          |
-
-## Release flow
-
-To create new release:
-
-1. Merge all changes to the `main` branch
-1. Navigate to Repo => Actions
-1. Run action "Prepare release" action against `main` branch
-1. When action execution is finished, navigate to Repo => Pull requests
-1. Find pull request named "chore(release): X.X.X" review and merge it with "Rebase and merge" (or "Squash and merge")
-1. After merge release action will be triggered automatically
-1. Navigate to Repo => Actions and see last actions logs for further details 
-
-
-### Secrets
-List of secrets that you should add to secrets
-* TARGET_REPO - Repository with our infra (lidofinance/infra-mainnet). This var need to run workflows from target repository.
-* APP_ID and APP_PRIVATE_KEY - are ID and key to application that calls workflows in another application.

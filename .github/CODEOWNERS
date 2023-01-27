@@ -1,5 +1,2 @@
-# These owners will be the default owners for everything in
-# the repo. Unless a later match takes precedence.
-# Uncomment next line
-# * @username
+* @F4ever
 .github @lidofinance/review-gh-workflows
